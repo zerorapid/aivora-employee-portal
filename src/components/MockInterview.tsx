@@ -15,12 +15,22 @@ import {
   TrendingUp,
   Sparkles,
   Trophy,
-  Activity
+  Activity,
+  X,
+  FileText,
+  ArrowRight,
+  Briefcase
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function MockInterview() {
   const [isStarted, setIsStarted] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
+  const [selectedResume, setSelectedResume] = useState('Sarah_Miller_Staff_Arch.pdf');
+  const [selectedRole, setSelectedRole] = useState('Senior Cloud Architect');
+  const [experienceLevel, setExperienceLevel] = useState('Staff');
+  const [customJD, setCustomJD] = useState('');
+  const [focusArea, setFocusArea] = useState('System Design');
   const [messages, setMessages] = useState<any[]>([]);
   const [userInput, setUserInput] = useState('');
   const [isThinking, setIsThinking] = useState(false);
@@ -33,11 +43,18 @@ export default function MockInterview() {
   }, [messages]);
 
   const handleStart = () => {
+    setShowSetup(false);
     setIsStarted(true);
     setIsThinking(true);
     setTimeout(() => {
+      const roleText = customJD ? "this custom role" : selectedRole;
+      const skillText = selectedResume.includes('Staff') ? "distributed microservices" : "technical implementation";
       setMessages([
-        { role: 'ai', text: "Welcome to your AI Practice Interview. I'm your interviewer today. Let's start with a brief introduction of your professional background and core expertise.", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+        { 
+          role: 'ai', 
+          text: `Welcome, Sarah. I've analyzed your ${selectedResume} for this ${experienceLevel}-level ${roleText} session. Given your background in ${skillText}, let's start with a high-stakes scenario. How would you...`, 
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+        }
       ]);
       setIsThinking(false);
     }, 1500);
@@ -62,6 +79,123 @@ export default function MockInterview() {
 
   return (
     <div className="h-full flex flex-col bg-[#F8F7F4] overflow-hidden">
+      <AnimatePresence>
+        {showSetup && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSetup(false)}
+              className="absolute inset-0 bg-[#111111]/60 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-white rounded-[40px] shadow-2xl overflow-hidden border border-[#EAEAEA]"
+            >
+               <div className="p-10">
+                  <div className="flex justify-between items-start mb-10">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Sparkles className="w-4 h-4 text-[#0078D4]" />
+                        <span className="text-[10px] font-bold text-[#0078D4] uppercase tracking-[0.3em]">Simulation Architect</span>
+                      </div>
+                      <h2 className="text-4xl font-bold text-[#111111] tracking-tight">Personalize Your Session</h2>
+                      <p className="text-[#605E5C] mt-2 font-semibold text-sm">Select the source context for your AI interviewer.</p>
+                    </div>
+                    <button onClick={() => setShowSetup(false)} className="w-12 h-12 rounded-2xl bg-[#F8F7F4] flex items-center justify-center hover:bg-[#EAEAEA]"><X className="text-[#A19F9D]" size={24} /></button>
+                  </div>
+
+                  <div className="space-y-10 overflow-y-auto max-h-[60vh] pr-4 custom-scrollbar">
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-bold text-[#A19F9D] uppercase tracking-widest ml-1">Select Active Resume</label>
+                        <div className="grid grid-cols-2 gap-3">
+                           {['Sarah_Miller_Staff_Arch.pdf', 'Solutions_Architect_V3.pdf'].map(r => (
+                              <div 
+                                key={r} 
+                                onClick={() => setSelectedResume(r)}
+                                className={`p-4 rounded-[20px] border-2 cursor-pointer transition-all flex items-center gap-3 ${selectedResume === r ? 'bg-[#0078D4]/5 border-[#0078D4]' : 'bg-white border-[#EAEAEA] hover:border-[#0078D4]/20'}`}
+                              >
+                                 <FileText size={16} className={selectedResume === r ? 'text-[#0078D4]' : 'text-[#A19F9D]'} />
+                                 <span className="text-[11px] font-bold text-[#111111] truncate">{r}</span>
+                              </div>
+                           ))}
+                        </div>
+                     </div>
+
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-bold text-[#A19F9D] uppercase tracking-widest ml-1">Target Internal Role</label>
+                        <div className="grid grid-cols-1 gap-3">
+                           {['Senior Cloud Architect', 'Platform Engineering Lead', 'Staff SRE Integration'].map(role => (
+                              <div 
+                                key={role} 
+                                onClick={() => { setSelectedRole(role); setCustomJD(''); }}
+                                className={`p-4 rounded-[20px] border-2 cursor-pointer transition-all flex items-center justify-between ${selectedRole === role && !customJD ? 'bg-[#0078D4]/5 border-[#0078D4]' : 'bg-white border-[#EAEAEA] hover:border-[#0078D4]/20'}`}
+                              >
+                                 <div className="flex items-center gap-3">
+                                    <Briefcase size={16} className={selectedRole === role ? 'text-[#0078D4]' : 'text-[#A19F9D]'} />
+                                    <span className="text-xs font-bold text-[#111111]">{role}</span>
+                                 </div>
+                                 <div className="bg-[#111111]/5 px-3 py-1 rounded-full text-[8px] font-bold text-[#A19F9D]">URGENT</div>
+                              </div>
+                           ))}
+                        </div>
+                        <div className="pt-2">
+                           <label className="text-[9px] font-bold text-[#A19F9D] uppercase tracking-widest ml-1 mb-2 block">OR Paste Specific Job Description</label>
+                           <textarea 
+                             value={customJD}
+                             onChange={(e) => setCustomJD(e.target.value)}
+                             placeholder="Paste JD requirements here for customized AI analysis..."
+                             className="w-full bg-[#F8F7F4] border border-[#EAEAEA] rounded-[24px] p-5 text-xs font-medium min-h-[120px] outline-none focus:border-[#0078D4] transition-all"
+                           />
+                        </div>
+                     </div>
+
+                     <div className="space-y-4">
+                        <label className="text-[10px] font-bold text-[#A19F9D] uppercase tracking-widest ml-1">Target Complexity Level</label>
+                        <div className="flex gap-2">
+                           {['Associate', 'Senior', 'Staff', 'Executive'].map(lvl => (
+                              <button 
+                                key={lvl}
+                                onClick={() => setExperienceLevel(lvl)}
+                                className={`flex-1 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all ${experienceLevel === lvl ? 'bg-[#0078D4] text-white border-[#0078D4] shadow-lg shadow-[#0078D4]/20' : 'bg-[#F8F7F4] text-[#A19F9D] border-[#EAEAEA] hover:border-[#0078D4]/10'}`}
+                              >
+                                 {lvl}
+                              </button>
+                           ))}
+                        </div>
+                     </div>
+
+                     <div className="space-y-4 pb-4">
+                        <label className="text-[10px] font-bold text-[#A19F9D] uppercase tracking-widest ml-1">Interview Depth</label>
+                        <div className="flex flex-wrap gap-2">
+                           {['Technical Depth', 'Leadership', 'System Design', 'Strategic Vision'].map(f => (
+                              <button 
+                                key={f}
+                                onClick={() => setFocusArea(f)}
+                                className={`px-5 py-2.5 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all ${focusArea === f ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#A19F9D] border-[#EAEAEA]'}`}
+                              >
+                                 {f}
+                              </button>
+                           ))}
+                        </div>
+                     </div>
+                  </div>
+
+                  <button 
+                    onClick={handleStart}
+                    className="w-full mt-12 py-5 bg-[#0078D4] text-white rounded-[24px] font-bold text-sm uppercase tracking-widest hover:bg-[#005A9E] transition-all shadow-2xl shadow-[#0078D4]/20 flex items-center justify-center gap-3"
+                  >
+                     Launch Personalized Simulation <ArrowRight size={18} />
+                  </button>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {!isStarted ? (
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="max-w-xl w-full bg-white rounded-[40px] p-12 text-center shadow-av-lg border border-[#EAEAEA]">
@@ -83,7 +217,7 @@ export default function MockInterview() {
              </div>
 
              <button 
-                onClick={handleStart}
+                onClick={() => setShowSetup(true)}
                 className="w-full py-5 bg-[#111111] text-white rounded-2xl font-bold text-sm hover:bg-[#0078D4] transition-all shadow-2xl shadow-black/20 flex items-center justify-center gap-3"
              >
                 <Play size={18} fill="white" /> Initialize AI Simulation

@@ -188,7 +188,6 @@ export default function App() {
                 <div className="text-sm font-bold text-[#111111] tracking-tight">Active Session</div>
                 <div className="text-[9px] font-bold text-[#0078D4] uppercase tracking-widest mt-0.5">READY • 82%</div>
               </div>
-              <Activity size={20} className="text-[#0078D4]" />
             </div>
           </div>
         </header>
